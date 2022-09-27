@@ -63,7 +63,7 @@ def cav_parameters(cavity,K,l,Rmax,Rmin=0.1):
     elif(cavity=='TEM'):
         alist=alphaAk_Rk_EM(K,Rmax,Rmin); alpha_k=array(alist[:,0])/l; Ak=array(alist[:,1])
         Ik=(Ak-Ak*jv(0,alpha_k*Rmax)-yv(0,alpha_k*Rmax))/alpha_k-(Ak-Ak*jv(0,alpha_k*Rmin)-yv(0,alpha_k*Rmin))/alpha_k
-        norm=1/sqrt(2/l/pi/alpha_k**2/(Ak*jv(0,alpha_k*Rmax)+yv(0,alpha_k*Rmax))**2)
+        norm=1/sqrt(2/l/pi/alpha_k**2/(Ak**2*(jv(0,alpha_k*Rmax)**2)+(yv(0,alpha_k*Rmax)**2)))#-(Ak*jv(0,alpha_k*Rmin)+yv(0,alpha_k*Rmin))**2))
     return alpha_k.flatten(),Ik.flatten(),norm.flatten()
 
 def gw_binary_time_signal(M,dist,f_min,deltaT):

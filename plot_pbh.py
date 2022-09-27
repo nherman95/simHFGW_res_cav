@@ -3,6 +3,7 @@ from matplotlib import rcParams,ticker
 from matplotlib.pyplot import *
 from numpy import fft,pi
 import pickle
+from cavities import RMS_compute,fchirp
 
 rcParams["font.family"] = "serif"
 rcParams["font.weight"] = 500
@@ -33,6 +34,7 @@ with open('./SIMFREQM5D25TEM.pkl','rb') as f:  # Python 3: open(..., 'rb')
     f.close()
 
 figure(1)
+print(rmsP_t,rmsP_f,RMS_compute(fchirp,2200/25/M,2200/M,'TEM',5,M))
 ax1=subplot(1,2,1)
 plot(t,dP_t,'b')
 axis([0,6e-5,-5e-9,5e-9])
