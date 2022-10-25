@@ -39,6 +39,7 @@ plt.ylabel('$P_{RIR}$ (W)')
 plt.savefig("bodeTM.png")
 cavity='TEM'
 plt.figure()
+print(fct_bode(fplot,cavity,Rmax))
 plt.loglog(fplot,fct_bode(fplot,cavity,Rmax),'b')
 plt.xlim(1e5,1e9)
 plt.xlabel('Frequency (Hz)')

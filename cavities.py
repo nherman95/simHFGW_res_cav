@@ -9,7 +9,9 @@ from scipy.interpolate import CubicSpline
 from scipy.integrate import romb
 from time import time
 from scipy.constants import c,G
+from sympy import besselj
 from harmosc import harmosc_solver
+from mpmath import meijerg,mpf,convert,hyp1f2
 
 
 mu0 = 4*pi*10**(-7) #T #Tm/A ou kg m A-2s-2
@@ -63,7 +65,14 @@ def cav_parameters(cavity,K,l,Rmax,Rmin=0.1):
     elif(cavity=='TEM'):
         alist=alphaAk_Rk_EM(K,Rmax,Rmin); alpha_k=array(alist[:,0])/l; Ak=array(alist[:,1])
         Ik=(Ak-Ak*jv(0,alpha_k*Rmax)-yv(0,alpha_k*Rmax))/alpha_k-(Ak-Ak*jv(0,alpha_k*Rmin)-yv(0,alpha_k*Rmin))/alpha_k
-        norm=1/sqrt(2/l/pi/alpha_k**2/(Ak**2*(jv(0,alpha_k*Rmax)**2)+(yv(0,alpha_k*Rmax)**2)))#-(Ak*jv(0,alpha_k*Rmin)+yv(0,alpha_k*Rmin))**2))
+        norm=np.empty(5)
+        for i in range(len(alpha_k)):
+            tmp1=0.5*((-Ak[i]**2+1)*hyp1f2(0.5,1,2,convert(str(-alpha_k[i]**2*Rmin**2)[1:-1]))-2/sqrt(pi)*meijerg([[],[-0.5,0.5]],[[-1,0,0],[-0.5]],convert(str(alpha_k[i]*Rmin)[1:-1]),0.5)-2*Ak[i]*jv(0,alpha_k[i]*Rmin)*yv(0,alpha_k[i]*Rmin)-2*Ak[i]*jv(1,alpha_k[i]*Rmin)*yv(1,alpha_k[i]*Rmin)+Ak[i]**2+1)
+            #tmp1=1/2*Rmin**2*(2*Ak[i]/sqrt(pi)*meijerg([[0,0.5],[-0.5]],[[0,1],[-1,-1,-0.5]],convert(str(alpha_k[i]*Rmin)[1:-1]),0.5)+Ak[i]**2*(jv(1,alpha_k[i]*Rmin)**2-jv(0,alpha_k[i]*Rmin)*jv(2,alpha_k[i]*Rmin))+yv(1,alpha_k[i]*Rmin)**2-yv(0,alpha_k[i]*Rmin)*yv(2,alpha_k[i]*Rmin))
+            #tmp2=1/2*Rmax**2*(2*Ak[i]/sqrt(pi)*meijerg([[0,0.5],[-0.5]],[[0,1],[-1,-1,-0.5]],convert(str(alpha_k[i]*Rmax)[1:-1]),0.5)+Ak[i]**2*(jv(1,alpha_k[i]*Rmax)**2-jv(0,alpha_k[i]*Rmax)*jv(2,alpha_k[i]*Rmax))+yv(1,alpha_k[i]*Rmax)**2-yv(0,alpha_k[i]*Rmax)*yv(2,alpha_k[i]*Rmax))
+            tmp2=0.5*((-Ak[i]**2+1)*hyp1f2(0.5,1,2,convert(str(-alpha_k[i]**2*Rmax**2)[1:-1]))-2/sqrt(pi)*meijerg([[],[-0.5,0.5]],[[-1,0,0],[-0.5]],convert(str(alpha_k[i]*Rmax)[1:-1]),0.5)-2*Ak[i]*jv(0,alpha_k[i]*Rmax)*yv(0,alpha_k[i]*Rmax)-2*Ak[i]*jv(1,alpha_k[i]*Rmax)*yv(1,alpha_k[i]*Rmax)+Ak[i]**2+1)
+            norm[i]=sqrt(tmp2-tmp1*l/2*pi)
+        #norm=1/sqrt(2/l/pi/alpha_k**2/(Ak**2*(jv(0,alpha_k*Rmax)**2)+(yv(0,alpha_k*Rmax)**2)))#-(Ak*jv(0,alpha_k*Rmin)+yv(0,alpha_k*Rmin))**2))
     return alpha_k.flatten(),Ik.flatten(),norm.flatten()
 
 def gw_binary_time_signal(M,dist,f_min,deltaT):
