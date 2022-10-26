@@ -67,11 +67,11 @@ def cav_parameters(cavity,K,l,Rmax,Rmin=0.1):
         Ik=(Ak-Ak*jv(0,alpha_k*Rmax)-yv(0,alpha_k*Rmax))/alpha_k-(Ak-Ak*jv(0,alpha_k*Rmin)-yv(0,alpha_k*Rmin))/alpha_k
         norm=np.empty(5)
         for i in range(len(alpha_k)):
-            tmp1=0.5*((-Ak[i]**2+1)*hyp1f2(0.5,1,2,convert(str(-alpha_k[i]**2*Rmin**2)[1:-1]))-2/sqrt(pi)*meijerg([[],[-0.5,0.5]],[[-1,0,0],[-0.5]],convert(str(alpha_k[i]*Rmin)[1:-1]),0.5)-2*Ak[i]*jv(0,alpha_k[i]*Rmin)*yv(0,alpha_k[i]*Rmin)-2*Ak[i]*jv(1,alpha_k[i]*Rmin)*yv(1,alpha_k[i]*Rmin)+Ak[i]**2+1)
+            tmp1=0.5*(-(Ak[i]**2+1)*hyp1f2(0.5,1,2,convert(str(-alpha_k[i]**2*Rmin**2)[1:-1]))-2/sqrt(pi)*meijerg([[],[-0.5,0.5]],[[-1,0,0],[-0.5]],convert(str(alpha_k[i]*Rmin)[1:-1]),0.5)-2*Ak[i]*jv(0,alpha_k[i]*Rmin)*yv(0,alpha_k[i]*Rmin)-2*Ak[i]*jv(1,alpha_k[i]*Rmin)*yv(1,alpha_k[i]*Rmin)+Ak[i]**2+1)
             #tmp1=1/2*Rmin**2*(2*Ak[i]/sqrt(pi)*meijerg([[0,0.5],[-0.5]],[[0,1],[-1,-1,-0.5]],convert(str(alpha_k[i]*Rmin)[1:-1]),0.5)+Ak[i]**2*(jv(1,alpha_k[i]*Rmin)**2-jv(0,alpha_k[i]*Rmin)*jv(2,alpha_k[i]*Rmin))+yv(1,alpha_k[i]*Rmin)**2-yv(0,alpha_k[i]*Rmin)*yv(2,alpha_k[i]*Rmin))
             #tmp2=1/2*Rmax**2*(2*Ak[i]/sqrt(pi)*meijerg([[0,0.5],[-0.5]],[[0,1],[-1,-1,-0.5]],convert(str(alpha_k[i]*Rmax)[1:-1]),0.5)+Ak[i]**2*(jv(1,alpha_k[i]*Rmax)**2-jv(0,alpha_k[i]*Rmax)*jv(2,alpha_k[i]*Rmax))+yv(1,alpha_k[i]*Rmax)**2-yv(0,alpha_k[i]*Rmax)*yv(2,alpha_k[i]*Rmax))
-            tmp2=0.5*((-Ak[i]**2+1)*hyp1f2(0.5,1,2,convert(str(-alpha_k[i]**2*Rmax**2)[1:-1]))-2/sqrt(pi)*meijerg([[],[-0.5,0.5]],[[-1,0,0],[-0.5]],convert(str(alpha_k[i]*Rmax)[1:-1]),0.5)-2*Ak[i]*jv(0,alpha_k[i]*Rmax)*yv(0,alpha_k[i]*Rmax)-2*Ak[i]*jv(1,alpha_k[i]*Rmax)*yv(1,alpha_k[i]*Rmax)+Ak[i]**2+1)
-            norm[i]=sqrt(tmp2-tmp1*l/2*pi)
+            tmp2=0.5*(-(Ak[i]**2+1)*hyp1f2(0.5,1,2,convert(str(-alpha_k[i]**2*Rmax**2)[1:-1]))-2/sqrt(pi)*meijerg([[],[-0.5,0.5]],[[-1,0,0],[-0.5]],convert(str(alpha_k[i]*Rmax)[1:-1]),0.5)-2*Ak[i]*jv(0,alpha_k[i]*Rmax)*yv(0,alpha_k[i]*Rmax)-2*Ak[i]*jv(1,alpha_k[i]*Rmax)*yv(1,alpha_k[i]*Rmax)+Ak[i]**2+1)
+            norm[i]=sqrt((tmp2-tmp1)*l/2*pi)
         #norm=1/sqrt(2/l/pi/alpha_k**2/(Ak**2*(jv(0,alpha_k*Rmax)**2)+(yv(0,alpha_k*Rmax)**2)))#-(Ak*jv(0,alpha_k*Rmin)+yv(0,alpha_k*Rmin))**2))
     return alpha_k.flatten(),Ik.flatten(),norm.flatten()
 
@@ -128,7 +128,7 @@ def time_approach(hp,t,cavity,Rmax,K=5,l=1,B0=5):
     return rmsP_t,dP_t
 
 
-def freq_appoach(TFhp,omega,cavity,Rmax,recomp,K=5,l=1,B0=5):
+def freq_appoach(TFhp,omega,cavity,Rmax,recomp=0,K=5,l=1,B0=5):
     alphak,Ik,norm=cav_parameters(cavity,K,l,Rmax)
     deltaF=1/2/pi*(omega[1]-omega[0])
     if (omega[-1]<alphak[-1]*c):
@@ -245,6 +245,9 @@ def Sh_ph(f):
     rep[f<= fcut4]=0
     return sqrt(rep/2)
 
+def sigmoid(x,fcut):
+    return 0.5+0.5*np.tanh((fcut-x)/fcut*20)
+
 def Sh_toy(f,omegaGW,fcut):
     omegaGW=1e-10
     H0=70/1e3/PC_SI
@@ -269,6 +272,32 @@ def Sh_toyff2(f,omegaGW,fcut):
     omegaGW=1e-10/1e7*f**2
     H0=70/1e3/PC_SI
     Sf=3*H0**2/4/pi**2/f**3*omegaGW*heaviside(-f+fcut,0.5)
+    return sqrt(Sf/2)
+
+def SSh_toy(f,omegaGW,fcut):
+    omegaGW=1e-10
+    H0=70/1e3/PC_SI
+    Sf=3*H0**2/4/pi**2/f**3*omegaGW*sigmoid(f,fcut)
+    return sqrt(Sf/2)
+def SSh_toyfm1(f,omegaGW,fcut):
+    omegaGW=1e-10*1e7/f
+    H0=70/1e3/PC_SI
+    Sf=3*H0**2/4/pi**2/f**3*omegaGW*sigmoid(f,fcut)
+    return sqrt(Sf/2)
+def SSh_toyff1(f,omegaGW,fcut):
+    omegaGW=1e-10/1e7*f
+    H0=70/1e3/PC_SI
+    Sf=3*H0**2/4/pi**2/f**3*omegaGW*sigmoid(f,fcut)
+    return sqrt(Sf/2)
+def SSh_toyfm2(f,omegaGW,fcut):
+    omegaGW=1e-10*1e7/f**2
+    H0=70/1e3/PC_SI
+    Sf=3*H0**2/4/pi**2/f**3*omegaGW*sigmoid(f,fcut)
+    return sqrt(Sf/2)
+def SSh_toyff2(f,omegaGW,fcut):
+    omegaGW=1e-10/1e7*f**2
+    H0=70/1e3/PC_SI
+    Sf=3*H0**2/4/pi**2/f**3*omegaGW*sigmoid(f,fcut)
     return sqrt(Sf/2)
 
 def get_sgwbs(freq):

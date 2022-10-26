@@ -1,4 +1,4 @@
-from cavities import Sh_toy, Sh_toyff1, Sh_toyfm1,RMS_compute,freq_appoach
+from cavities import Sh_toy, Sh_toyff1, Sh_toyfm1,RMS_compute,freq_appoach,SSh_toy,SSh_toyff1,SSh_toyfm1
 import matplotlib.pyplot as plt
 from numpy import pi,linspace,sqrt
 from scipy.stats import linregress
@@ -39,14 +39,14 @@ fcutarr=[1e7,1e8,1e9]
 psdarr=[]
 
 for fcut in fcutarr:
-     test=sqrt(2)*Sh_toy(freq,omegaGW,fcut)
-     rmsP_f,TFdP_f_p,dP_f,tdE_f=freq_appoach(test,omega,cavity,Rmax)
+     test=sqrt(2)*SSh_toy(freq,omegaGW,fcut)
+     rmsP_f,TFdP_f_p,omega,dP_f,tdE_f=freq_appoach(test,omega,cavity,Rmax)
      psdarr.append(abs(TFdP_f_p)**2)
 #plt.loglog(freq,abs(TFdP_f_p)**2,'b')
 plt.loglog(freq,psdarr[0],'--r',label=r'$\nu_{cut}=10^7$ Hz')
 plt.loglog(freq,psdarr[1],'r',linewidth=5,label=r'$\nu_{cut}=10^8$ Hz')
 plt.loglog(freq,psdarr[2],':r',label=r'$\nu_{cut}=10^9$ Hz')
-plt.xlim(1e5,1e9)
+plt.xlim(1e5,1e10)
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('PSD of induced Power ($W^2$/Hz)')
 plt.legend(loc=2)
@@ -93,9 +93,9 @@ for r in range(len(rmaxarr)):
      print(r)
      l = 1.0  ;rmax = rmaxarr[r] ; rmin = 0.1 #m
      Rmax=rmax/l ; Rmin=rmin/l
-     RMS_toy.append(RMS_compute(Sh_toy,fmin,fmax,cavity,Rmax,omegaGW,fcut))
-     RMS_toy2.append(RMS_compute(Sh_toyfm1,fmin,fmax,cavity,Rmax,omegaGW,fcut))
-     RMS_toy3.append(RMS_compute(Sh_toyff1,fmin,fmax,cavity,Rmax,omegaGW,fcut))
+     RMS_toy.append(RMS_compute(SSh_toy,fmin,fmax,cavity,Rmax,omegaGW,fcut))
+     RMS_toy2.append(RMS_compute(SSh_toyfm1,fmin,fmax,cavity,Rmax,omegaGW,fcut))
+     RMS_toy3.append(RMS_compute(SSh_toyff1,fmin,fmax,cavity,Rmax,omegaGW,fcut))
      #RMS_toy4.append(RMS_compute(Sh_toyfm2,fmin,fmax,cavity,Rmax,omegaGW,fcut))
      #RMS_toy5.append(RMS_compute(Sh_toyff2,fmin,fmax,cavity,Rmax,omegaGW,fcut))
 #     RMS_pt.append(RMS_compute(Sh_pt,fmin,fmax,cavity,Rmax))
