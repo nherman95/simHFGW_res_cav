@@ -17,15 +17,16 @@ rcParams['savefig.bbox'] = 'tight'
 rcParams['savefig.pad_inches'] = 0.1
 
 rcParams['figure.autolayout'] = False
-rcParams['figure.figsize'] = 9.5, 8
+rcParams['figure.figsize'] = 18, 8
 rcParams['axes.labelsize'] = 20
-rcParams['axes.titlesize'] = 22
+rcParams['axes.titlesize'] = 20
 rcParams['font.size'] = 16
-rcParams['lines.linewidth'] = 2.0
-rcParams['lines.markersize'] = 8
+rcParams['lines.linewidth'] = 2.5
+rcParams['lines.markersize'] = 0.5
 rcParams['legend.fontsize'] = 14
-rcParams['xtick.labelsize'] = 16
-rcParams['ytick.labelsize'] = 16
+rcParams['xtick.labelsize'] = 18
+rcParams['ytick.labelsize'] = 18
+
 cavity='TM'
 Mexp=5
 den_f=25
@@ -102,7 +103,7 @@ xmesh=rmesh*np.cos(thmesh)
 ymesh=rmesh*np.sin(thmesh)
 zp=[0.1,-0.5,1.75,-3]
 k=50000
-step=200
+step=250
 
 
 def Squad(zp):
@@ -135,10 +136,12 @@ for i in range(len(zp)):
     ax2[i].set_ylim(0,2)
     ax2[i].set_xlabel(r'Time (arb. unit)')
     #ax2[i].legend()
-    ax[i].set_title(r"z={}".format(zp[i]))
-    ax2[i].set_title(r"z={}".format(zp[i]))
+    ax[i].set_title(r"z={} m".format(zp[i]))
+    ax2[i].set_title(r"z={} m".format(zp[i]))
 ax[-1].legend(bbox_to_anchor =(1.45, 1.00))
 ax[0].set_ylabel(r'$L^2$-norm of the source term ($T^{-1}m^{-2}$)')
 ax2[-1].legend(bbox_to_anchor =(1.35, 1.00))
-
+plt.subplots_adjust(wspace=0.25)
+fig.savefig("approx.png")
+fig2.savefig("approx2.png")
 plt.show()
