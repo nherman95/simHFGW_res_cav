@@ -66,7 +66,7 @@ x_scale = 9.5 * 0.78 / (rng[1] - rng[0])
 y_scale = 8 * 0.80 / (rng[3] - rng[2])  
 # angle= np.degrees(np.arctan2((np.log(prmslim/fct_bode(fplot[1],cavity,Rmax))-np.log(prmslim/fct_bode(fplot[0],cavity,Rmax))),np.log(fplot[1])-np.log(fplot[0])))
 # print(angle)
-l=np.array([4e5,5e-30])
+l=np.array([6e5,1e-30])
 # transangle=plt.gca().transData.transform_angles(np.array((angle,)),l.reshape((1, 2)))[0]
 # print(transangle)
 plt.annotate("Detectable strain at $\mathbf{10^{-14}}$ W ",l,rotation=-61.5/1.75, fontweight='bold',fontsize=18)
