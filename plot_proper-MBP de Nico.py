@@ -95,7 +95,6 @@ rcParams['lines.markersize'] = 8
 rcParams['legend.fontsize'] = 14
 rcParams['xtick.labelsize'] = 22
 rcParams['ytick.labelsize'] = 22
-rcParams['text.usetex'] = True
 
 while(Rmax < 10):
     print(Rmax)
@@ -150,4 +149,4 @@ plt.legend()
 plt.xlabel(r"Outer radius (m)")
 plt.ylabel(r"Frequency (Hz)")
 plt.grid(True, which="both")
-plt.savefig("proper.png")
+plt.savefig("proper.pdf")

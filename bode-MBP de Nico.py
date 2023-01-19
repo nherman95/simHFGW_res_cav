@@ -22,6 +22,7 @@ rcParams['lines.markersize'] = 8
 rcParams['legend.fontsize'] = 14
 rcParams['xtick.labelsize'] = 22
 rcParams['ytick.labelsize'] = 22
+#rcParams['text.usetex'] = True
 
 pi=np.pi
 B0=5
@@ -33,6 +34,9 @@ alphak,Ik,normk=cav_parameters(cavity,K,l,Rmax)
 
 fplot=np.linspace(1e5,1e9,2000000)
 plt.loglog(fplot,fct_bode(fplot,cavity,Rmax),'b',label='TM')
+plt.annotate("010 mode",(c*alphak[0]/2/pi,fct_bode(c*alphak[0]/2/pi,cavity,Rmax)*1.05),xytext=(5e6,1e22),arrowprops=dict(facecolor='black', shrink=0.05),fontsize=15)
+for k in range(1,len(alphak)):
+        plt.annotate("{0}10".format(k),(c*alphak[k]/2/pi*0.9,fct_bode(c*alphak[k]/2/pi,cavity,Rmax)*1.2),fontsize=8)
 plt.xlim(1e5,1e9)
 # plt.xlabel('Frequency (Hz)')
 # plt.ylabel('$P_{RIR}$ (W)')
@@ -41,11 +45,16 @@ cavity='TEM'
 #plt.figure()
 #print(fct_bode(fplot,cavity,Rmax))
 plt.loglog(fplot,fct_bode(fplot,cavity,Rmax),'r',label='TEM')
+plt.loglog(fplot[:int(len(fplot)/100)],2e-5*fplot[:int(len(fplot)/100)]**3,'--k',linewidth=1)
+plt.annotate(r" $\propto \omega^3$ ",(1e6,2e13), xytext=(2e5,1e14),arrowprops=dict(facecolor='black', shrink=0.05),fontsize=15)
+plt.annotate(r" $\sin\left(\frac{\omega c}{2L}\right)$ ",(2e8,1e14), xytext=(3e7,1e13),arrowprops=dict(facecolor='black', shrink=0.05),fontsize=15)
+
 plt.xlim(1e5,1e9)
 plt.xlabel('Frequency (Hz)')
-plt.ylabel('$P_{RIR}$ (W)')
+plt.ylabel('$P_{RIR}$ ($W\cdot$ strain)')
 plt.legend()
-plt.savefig("bodeTETEM.png")
+#plt.show()
+plt.savefig("bodeTETEM.pdf")
 
 plt.figure()
 prmslim=1e-14
@@ -77,14 +86,52 @@ ax.add_artist(ell)
 l=np.array([1.5e6,1e-33])
 plt.ylim(1e-38,1e-24)
 plt.annotate("Resonant modes",l,color='goldenrod',fontweight='bold',fontsize=18)
-plt.savefig("detlim.png")
+plt.savefig("detlim.pdf")
 plt.figure()
 plt.loglog(fplot,sqrt(fplot)*SSh_toy(fplot,1e-10,1e8),'b')
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Characteristic Strain')
 plt.xlim(1e5,1e9)
 plt.ylim(1e-33,1e-28)
-plt.savefig("toymodel.png")
+plt.savefig("toymodel.pdf")
+
+fig, ax=plt.subplots(1,K,figsize=(18,7))
+fig2, ax2=plt.subplots(1,K,figsize=(18,7))
+r=linspace(1e-16,5,200)
+phi=linspace(-pi,pi,200)
+R,P=np.meshgrid(r,phi)
+X=R*cos(P)
+Y=R*sin(P)
+Z=np.empty(np.shape(R))
+Z2=np.empty(np.shape(R))
+print(np.shape(R))
+for k in range(K):
+        print(k)
+        for i in range(np.size(R[0,:])):
+                Z[i,:]=jv(1,alphak[k]*R[i,:])/R[i,:]*cos(P[i,:])/normk[k]
+                Z2[i,:]=-(alphak[k]*jv(0,alphak[k]*R[i,:])-jv(1,alphak[k]*R[i,:])/R[i,:])*sin(P[i,:])/normk[k]
+        cp=ax[k].scatter(X,Y,c=Z/np.max(np.abs(Z)),cmap='jet')
+        cp.set_clim(-1,1)
+        ax[k].set_box_aspect(1)
+        ax[k].set_xticks([])
+        ax[k].set_yticks([])
+        ax[k].set_title("k={0:d}".format(k))
+        cp2=ax2[k].scatter(X,Y,c=Z2/np.max(np.abs(Z2)),cmap='jet')
+        cp2.set_clim(-1,1)
+        ax2[k].set_box_aspect(1)
+        ax2[k].set_xticks([])
+        ax2[k].set_yticks([])
+        ax2[k].set_title("k={0:d}".format(k))
+        #cp2=ax2[k].scatter(X,Y,c=Z2/np.max(np.abs(Z2)),cmap='jet')
+        #cp2.set_clim(-1,1)
+        #ax2[k].set_box_aspect(1)
+fig.colorbar(cp,ax=ax,location='bottom')  
+fig.suptitle("Representation of $\psi^r_{k10}$",fontsize=48)  
+fig2.colorbar(cp2,ax=ax2,location='bottom')  
+fig2.suptitle("Representation of $\psi^\\theta_{k10}$",fontsize=48)  
+fig.savefig("psir.pdf")
+fig2.savefig("psith.pdf")
+
 
 
 # Masse = np.linspace(2,8,50); Masse = 10**(-1*Masse)

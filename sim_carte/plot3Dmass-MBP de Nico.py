@@ -1,4 +1,4 @@
-from numpy import loadtxt,array,log10,arange
+from numpy import loadtxt,array,log10,arange,meshgrid,empty
 import matplotlib.pyplot as plt
 from matplotlib import rcParams,colors
 from numpy.core.function_base import linspace
@@ -11,7 +11,7 @@ rcParams['savefig.bbox'] = 'tight'
 rcParams['savefig.pad_inches'] = 0.1
 
 rcParams['figure.autolayout'] = False
-rcParams['figure.figsize'] = 15.5, 7
+rcParams['figure.figsize'] = 12, 10
 rcParams['axes.labelsize'] = 28
 rcParams['axes.titlesize'] = 36
 rcParams['font.size'] = 12
@@ -22,7 +22,7 @@ rcParams['xtick.labelsize'] = 14
 rcParams['ytick.labelsize'] = 14
 Mexp=loadtxt('mass.in')
 R=loadtxt('ray.in')
-Y=loadtxt('results/simtotal.txt')
+Y=loadtxt('simtotal.txt')
 fig=plt.figure()
 ax=plt.gca()
 x = []
@@ -33,6 +33,7 @@ for m in range (len(Mexp)):
         x.append(10**(-Mexp[m]))
         y.append((R[r]))
         z.append(Y[m+r*len(R)]) #abs(save_A_fit[m,r]/Y[m,r])
+        
 x = array(x)
 y = array(y)
 z = array(z)
@@ -49,6 +50,7 @@ plt.yticks(linspace(1,10,10))
 plt.ylim(1,10)
 plt.xlabel('Mass($M_\odot$)')
 plt.ylabel('Cavity radius (m)')
+#M,r=meshgrid(10**(-Mexp),R)
+#plt.tricontour(x,y,z,[1e-14,1e-11,1e-10,1e-9],colors='k')
 ax.set_box_aspect(1)
-#plt.show()
-plt.savefig("carte.png")
+plt.savefig("carte.pdf")
